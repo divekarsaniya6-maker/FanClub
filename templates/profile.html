@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Player Profile – FanClub{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="container page-header-container">
+    <div>
+      <span class="badge-tag"><i class="fa-solid fa-id-card"></i> PLAYER ACCOUNT</span>
+      <h1 class="page-header-title">My Profile</h1>
+      <p class="page-header-subtitle">Manage your personal information and account security.</p>
+    </div>
+  </div>
+</div>
+
+<div class="container" style="margin-bottom: 5rem;">
+  <div class="profile-layout-grid">
+    <!-- Left: Profile Summary Card -->
+    <div class="profile-summary-card">
+      <div class="profile-avatar-large">
+        {{ user.name[0] | upper }}
+      </div>
+      <h2 class="profile-user-name">{{ user.name }}</h2>
+      <p class="profile-user-email">{{ user.email }}</p>
+
+      <div class="profile-role-tag role-{{ user.role.lower() }}">
+        <i class="fa-solid fa-shield"></i> {{ user.role | upper }}
+      </div>
+
+      <div class="profile-stats-grid">
+        <div class="profile-stat-item">
+          <div class="stat-number">{{ stats.total_bookings }}</div>
+          <div class="stat-label">Pitch Bookings</div>
+        </div>
+        <div class="profile-stat-item">
+          <div class="stat-number">{{ stats.teams_count }}</div>
+          <div class="stat-label">Squads Joined</div>
+        </div>
+      </div>
+
+      <div class="profile-meta-info">
+        <div><i class="fa-solid fa-phone"></i> {{ user.phone }}</div>
+        <div><i class="fa-regular fa-calendar"></i> Member since {{ user.created_at[:10] }}</div>
+      </div>
+    </div>
+
+    <!-- Right: Forms -->
+    <div class="profile-forms-column">
+      <!-- Edit Contact Info -->
+      <div class="detail-card">
+        <h3 class="detail-card-title"><i class="fa-solid fa-user-pen"></i> Update Personal Information</h3>
+        <form method="POST" action="{{ url_for('profile_update') }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+          <div class="form-group">
+            <label for="name" class="form-label">Full Name</label>
+            <input type="text" id="name" name="name" class="form-input" value="{{ user.name }}" required>
+          </div>
+
+          <div class="form-group">
+            <label for="email_static" class="form-label">Email Address (Read-only)</label>
+            <input type="email" id="email_static" class="form-input" value="{{ user.email }}" readonly disabled style="opacity: 0.7;">
+          </div>
+
+          <div class="form-group">
+            <label for="phone" class="form-label">Mobile Phone Number</label>
+            <input type="tel" id="phone" name="phone" class="form-input" value="{{ user.phone }}" pattern="[0-9]{10}" required>
+          </div>
+
+          <button type="submit" class="btn btn-primary">
+            <i class="fa-solid fa-floppy-disk"></i> Save Profile Details
+          </button>
+        </form>
+      </div>
+
+      <!-- Change Password -->
+      <div class="detail-card" style="margin-top: 2rem;">
+        <h3 class="detail-card-title"><i class="fa-solid fa-key"></i> Change Account Password</h3>
+        <form method="POST" action="{{ url_for('profile_password') }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+          <div class="form-group">
+            <label for="current_password" class="form-label">Current Password</label>
+            <input type="password" id="current_password" name="current_password" class="form-input" placeholder="••••••••" required>
+          </div>
+
+          <div class="form-row" style="display: flex; gap: 1rem;">
+            <div class="form-group" style="flex: 1;">
+              <label for="new_password" class="form-label">New Password</label>
+              <input type="password" id="new_password" name="new_password" class="form-input" placeholder="Min 6 characters" minlength="6" required>
+            </div>
+            <div class="form-group" style="flex: 1;">
+              <label for="confirm_new_password" class="form-label">Confirm New Password</label>
+              <input type="password" id="confirm_new_password" name="confirm_new_password" class="form-input" placeholder="Min 6 characters" minlength="6" required>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-outline">
+            <i class="fa-solid fa-lock"></i> Update Password
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="FanClub football ground booking and community platform.">
+  <title>FanClub — Your Game. Your Club.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="announcement"><span class="live-dot"></span> YOUR CITY. YOUR PITCH. YOUR PEOPLE. <span class="announcement-right">KHARGHAR · NAVI MUMBAI</span></div>
+  <header class="nav-wrap">
+    <a class="brand" href="#home"><span class="brand-mark">FC</span><span>FAN<span class="green">CLUB</span><small>FOOTBALL COMMUNITY</small></span></a>
+    <button class="mobile-toggle" id="mobileToggle" aria-label="Open navigation">☰</button>
+    <nav id="mainNav">
+      <a href="#home">Home</a><a href="#venues">Venues</a><a href="#teams">Teams</a><a href="#matches">Matches</a>
+      <button class="nav-link" data-open="bookings">My Bookings</button>
+      <button class="btn btn-small" id="authNav" data-open="login">LOGIN / JOIN</button>
+      <button class="nav-link hidden" id="logoutBtn">Logout</button>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" id="home">
+      <div class="hero-grid"></div>
+      <div class="hero-copy">
+        <div class="eyebrow"><span></span> MADE FOR THE LOVE OF THE GAME</div>
+        <h1>PLAY.<br>BOOK.<br><em>ENJOY.</em></h1>
+        <p class="hero-sub">YOUR GAME. YOUR CLUB.</p>
+        <p class="hero-description">Find your pitch. Bring your people. Make every match count. Your football community starts right here.</p>
+        <div class="hero-actions"><a href="#venues" class="btn">BOOK A GROUND <span>↗</span></a><a href="#teams" class="btn btn-outline">EXPLORE TEAMS</a></div>
+        <div class="hero-proof"><div class="proof-avatars"><b>S</b><b>K</b><b>P</b></div><span><strong>LOCAL FOOTBALL, BIG ENERGY</strong><small>Built for players in your neighbourhood</small></span></div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-image"></div>
+        <div class="hero-stamp"><strong>90</strong><span>MINUTES.<br>NO EXCUSES.</span></div>
+        <div class="hero-card"><span class="card-icon">⚽</span><div><strong>YOUR NEXT MATCH</strong><small>Starts with one booking.</small></div><span class="arrow">↗</span></div>
+      </div>
+      <div class="hero-bottom"><span>01 / THE HOME OF LOCAL FOOTBALL</span><span>SCROLL TO EXPLORE ↓</span></div>
+    </section>
+
+    <section class="ticker"><div>FIND YOUR TEAM <b>✳</b> BOOK YOUR PITCH <b>✳</b> PLAY YOUR GAME <b>✳</b> FIND YOUR TEAM <b>✳</b> BOOK YOUR PITCH <b>✳</b> PLAY YOUR GAME <b>✳</b></div></section>
+
+    <section class="section venues-section" id="venues">
+      <div class="section-head"><div><div class="eyebrow dark-eye">THE HOME TURF</div><h2>FIND YOUR <em>PITCH.</em></h2></div><p>One good game can make your whole week.<br>Pick a slot and get out there.</p></div>
+      <div class="venue-card">
+        <div class="venue-photo"><span class="venue-tag">FEATURED VENUE</span><span class="venue-photo-label">KHARGHAR / NAVI MUMBAI</span></div>
+        <div class="venue-info"><div class="venue-top"><div><h3>Ryan Vibgyor<br>KPC Empyrean</h3><p>⌖ Kharghar, Maharashtra</p></div><div class="price"><strong>₹200</strong><small>PER SLOT</small></div></div>
+          <div class="venue-features"><span>⚽ Football</span><span>◷ 60-minute slots</span><span>✓ Easy booking</span></div>
+          <div class="slot-list"><button class="slot" data-slot="8:00 PM - 9:00 PM"><span>8:00 PM – 9:00 PM</span><small>60 MIN</small><b>↗</b></button><button class="slot" data-slot="9:00 PM - 10:00 PM"><span>9:00 PM – 10:00 PM</span><small>60 MIN</small><b>↗</b></button></div>
+          <button class="btn full-btn" id="bookVenueBtn">CHECK AVAILABILITY <span>↗</span></button>
+          <p class="micro-note">Slots are confirmed only after booking is saved. Payment on this demo is simulated.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="how-section section" id="how">
+      <div class="section-head"><div><div class="eyebrow">NO COMPLICATED PLAYS</div><h2>THREE STEPS.<br><em>GAME ON.</em></h2></div><p>Less planning in the group chat.<br>More time on the pitch.</p></div>
+      <div class="steps"><article><span class="step-number">01</span><div class="step-icon">⌖</div><h3>FIND YOUR PITCH</h3><p>Check the featured Kharghar venue and choose a date that works for your squad.</p></article><article><span class="step-number">02</span><div class="step-icon">◷</div><h3>LOCK YOUR SLOT</h3><p>Pick your time, confirm your details and complete the demo payment flow.</p></article><article><span class="step-number">03</span><div class="step-icon">⚽</div><h3>OWN THE GAME</h3><p>Bring your team, meet local players and make the most of every minute.</p></article></div>
+    </section>
+
+    <section class="community-section" id="teams"><div class="community-text"><div class="eyebrow">MORE THAN A MATCH</div><h2>YOUR PEOPLE.<br>YOUR <em>CLUB.</em></h2><p>Every great team starts somewhere. Create a squad, join local players and turn casual kickabouts into something bigger.</p><button class="btn" data-open="createTeam">CREATE A TEAM <span>↗</span></button></div><div class="community-panel"><div class="panel-top"><span>THE LOCAL LEAGUE</span><span class="status-pill"><i></i> COMMUNITY</span></div><div class="team-feature"><div class="team-crest">KS</div><div><small>FEATURED COMMUNITY</small><h3>Kharghar Strikers</h3><p>⌖ Kharghar · Local football</p></div><span class="team-chevron">↗</span></div><div class="community-stats"><div><strong id="teamCount">—</strong><small>TEAMS</small></div><div><strong id="memberCount">—</strong><small>PLAYERS IN FEATURED TEAM</small></div><div><strong>1</strong><small>LOCAL VENUE</small></div></div><div id="teamList" class="team-list"></div></div></section>
+
+    <section class="section matches-section" id="matches"><div class="section-head"><div><div class="eyebrow dark-eye">ON THE FIXTURE LIST</div><h2>UPCOMING <em>MATCHES.</em></h2></div><p>Local teams. Real competition.<br>Every match has a story.</p></div><div id="matchList" class="match-list"><div class="empty-state">Loading fixtures…</div></div><div class="admin-match-link"><button class="text-button" data-open="admin">ADMIN: MANAGE FIXTURES ↗</button></div></section>
+
+    <section class="cta-band"><div><div class="eyebrow">THE PITCH IS CALLING</div><h2>DON'T JUST WATCH.<br><em>GET IN THE GAME.</em></h2></div><button class="btn btn-light" data-open="register">JOIN FANCLUB <span>↗</span></button></section>
+  </main>
+
+  <footer><a class="brand footer-brand" href="#home"><span class="brand-mark">FC</span><span>FAN<span class="green">CLUB</span><small>FOOTBALL COMMUNITY</small></span></a><p>YOUR GAME. YOUR CLUB.</p><div class="footer-links"><a href="#venues">Venues</a><a href="#teams">Teams</a><a href="#matches">Matches</a><a href="mailto:hello@fanclub.example">Contact</a></div><small>© 2026 FanClub. College project demonstration.</small></footer>
+
+  <div class="modal-backdrop hidden" id="modalBackdrop">
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button class="modal-close" id="modalClose" aria-label="Close">×</button>
+      <div id="modalContent"></div>
+    </section>
+  </div>
+  <div class="toast-wrap" id="toastWrap" aria-live="polite"></div>
+  <script>window.FANCLUB_CONFIG = {openAuth: {{ (open_auth or '')|tojson }}, openAdmin: {{ (open_admin or false)|tojson }}};</script>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

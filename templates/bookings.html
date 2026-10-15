@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}My Pitch Bookings – FanClub{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="container page-header-container">
+    <div>
+      <span class="badge-tag"><i class="fa-solid fa-clock-rotate-left"></i> PLAYER PORTAL</span>
+      <h1 class="page-header-title">My Ground Bookings</h1>
+      <p class="page-header-subtitle">Manage your football ground reservations, vouchers, and matchday slots.</p>
+    </div>
+    <div>
+      <a href="{{ url_for('venues') }}" class="btn btn-primary">
+        <i class="fa-solid fa-plus"></i> Reserve New Slot
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="container" style="margin-bottom: 5rem;">
+  <!-- Bookings List -->
+  {% if bookings %}
+    <div class="bookings-grid">
+      {% for b in bookings %}
+        <div class="booking-card">
+          <div class="booking-card-header">
+            <div>
+              <span class="booking-code-pill font-mono">{{ b.booking_code }}</span>
+              <span class="booking-date-sub"><i class="fa-regular fa-calendar"></i> Booked on {{ b.created_at.strftime('%Y-%m-%d') if b.created_at else '' }}</span>
+            </div>
+            <span class="status-pill status-{{ b.status.lower() }}">
+              {% if b.status == 'Confirmed' %}
+                <i class="fa-solid fa-circle-check"></i> Confirmed
+              {% elif b.status == 'Cancelled' %}
+                <i class="fa-solid fa-circle-xmark"></i> Cancelled
+              {% else %}
+                <i class="fa-solid fa-clock"></i> {{ b.status }}
+              {% endif %}
+            </span>
+          </div>
+
+          <div class="booking-card-body">
+            <h3 class="booking-venue-name">{{ b.venue_name }}</h3>
+            <p class="booking-venue-loc"><i class="fa-solid fa-location-dot"></i> {{ b.location }}</p>
+
+            <div class="booking-meta-row">
+              <div class="meta-block">
+                <span class="label">Date:</span>
+                <span class="val text-white">{{ b.booking_date }}</span>
+              </div>
+              <div class="meta-block">
+                <span class="label">Time Slot:</span>
+                <span class="val text-green">{{ b.time_slot }}</span>
+              </div>
+              <div class="meta-block">
+                <span class="label">Pitch Rate:</span>
+                <span class="val text-white font-bold">₹{{ "%.2f"|format(b.amount) }}</span>
+              </div>
+              <div class="meta-block">
+                <span class="label">Settlement:</span>
+                <span class="val text-green"><i class="fa-solid fa-receipt"></i> {{ b.payment_status }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="booking-card-footer">
+            <a href="{{ url_for('booking_details', booking_id=b.id) }}" class="btn btn-outline btn-sm">
+              <i class="fa-solid fa-ticket"></i> View Voucher Pass
+            </a>
+
+            {% if b.status == 'Confirmed' %}
+              <button type="button" class="btn btn-outline-danger btn-sm btn-cancel-booking" data-id="{{ b.id }}" data-code="{{ b.booking_code }}">
+                <i class="fa-solid fa-xmark"></i> Cancel Booking
+              </button>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <div class="empty-icon"><i class="fa-solid fa-calendar-xmark"></i></div>
+      <h3 class="empty-title">No pitch reservations yet</h3>
+      <p class="empty-desc">You haven't reserved any football grounds yet. Browse available pitches in Kharghar and reserve your 1-hour slot.</p>
+      <div style="margin-top: 1.5rem;">
+        <a href="{{ url_for('venues') }}" class="btn btn-primary btn-lg">
+          <i class="fa-solid fa-futbol"></i> Browse Football Grounds
+        </a>
+      </div>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/booking.js') }}"></script>
+{% endblock %}

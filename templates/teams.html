@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}Football Teams & Squads – FanClub{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="container page-header-container">
+    <div>
+      <span class="badge-tag"><i class="fa-solid fa-users"></i> SQUADS DIRECTORY</span>
+      <h1 class="page-header-title">Football Teams & Clubs</h1>
+      <p class="page-header-subtitle">Join an active local football squad, recruit teammates, or start your own club.</p>
+    </div>
+    <div class="header-actions">
+      {% if session.get('user_id') %}
+        <button type="button" id="btnOpenCreateTeamModal" class="btn btn-primary">
+          <i class="fa-solid fa-plus"></i> Create New Team
+        </button>
+      {% else %}
+        <a href="{{ url_for('login') }}" class="btn btn-primary">
+          <i class="fa-solid fa-arrow-right-to-bracket"></i> Login to Create Team
+        </a>
+      {% endif %}
+      <button type="button" id="btnOpenJoinByCodeModal" class="btn btn-outline">
+        <i class="fa-solid fa-key"></i> Join with Team Code
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="container" style="margin-bottom: 5rem;">
+  <!-- Search Toolbar -->
+  <div class="toolbar">
+    <div class="search-box">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" id="teamSearchInput" class="form-input" placeholder="Search squads by team name, city, or captain...">
+    </div>
+  </div>
+
+  <!-- Teams Grid -->
+  <div class="teams-grid" id="teamsGrid">
+    {% for team in teams %}
+      <div class="team-card" data-name="{{ team.name }}" data-city="{{ team.city }}" data-captain="{{ team.captain_name }}">
+        <div class="team-card-header">
+          <div class="team-badge-circle">
+            {{ team.name[:2] | upper }}
+          </div>
+          <div>
+            <h3 class="team-name">{{ team.name }}</h3>
+            <p class="team-city"><i class="fa-solid fa-location-dot"></i> {{ team.city }}</p>
+          </div>
+        </div>
+
+        <p class="team-desc">{{ team.description or 'Active competitive amateur squad registered on FanClub.' }}</p>
+
+        <div class="team-meta-row">
+          <div>
+            <span class="text-muted">Captain:</span>
+            <strong class="text-white">{{ team.captain_name }}</strong>
+          </div>
+          <div>
+            <span class="text-muted">Squad Size:</span>
+            <span class="badge-green-pill">{{ team.member_count }} Players</span>
+          </div>
+        </div>
+
+        <div class="team-code-row">
+          <span class="text-muted">Team Code:</span>
+          <span class="font-mono text-green">{{ team.team_code }}</span>
+          <button type="button" class="btn-copy-code btn-icon-sm" data-code="{{ team.team_code }}" title="Copy Code">
+            <i class="fa-regular fa-copy"></i>
+          </button>
+        </div>
+
+        <div class="team-card-footer">
+          <a href="{{ url_for('team_details', team_id=team.id) }}" class="btn btn-outline btn-block">
+            <i class="fa-solid fa-eye"></i> View Squad & Roster
+          </a>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <div id="teamsEmptyState" class="empty-state" style="display: none;">
+    <div class="empty-icon"><i class="fa-solid fa-users-slash"></i></div>
+    <h3 class="empty-title">No teams matched your query</h3>
+    <p class="empty-desc">Try searching with another club name or city.</p>
+  </div>
+</div>
+
+<!-- Modal: Create New Team -->
+<div id="createTeamModal" class="modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3 class="modal-title"><i class="fa-solid fa-shield-cat text-green"></i> Register Football Squad</h3>
+      <button type="button" class="modal-close" data-close-modal>&times;</button>
+    </div>
+    <form id="createTeamForm" class="modal-body">
+      <div class="form-group">
+        <label for="teamName" class="form-label">Squad / Club Name</label>
+        <input type="text" id="teamName" class="form-input" placeholder="e.g. Kharghar Hawks FC" required>
+      </div>
+
+      <div class="form-group">
+        <label for="teamCity" class="form-label">Home City / Area</label>
+        <input type="text" id="teamCity" class="form-input" placeholder="e.g. Kharghar, Navi Mumbai" required>
+      </div>
+
+      <div class="form-group">
+        <label for="teamDescription" class="form-label">Squad Bio / Match Level</label>
+        <textarea id="teamDescription" class="form-textarea" rows="3" placeholder="Tell other players about your squad style, preferred positions, and game schedule..."></textarea>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" data-close-modal>Cancel</button>
+        <button type="submit" class="btn btn-primary">
+          <i class="fa-solid fa-plus"></i> Create Squad
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal: Join by Team Code -->
+<div id="joinByCodeModal" class="modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3 class="modal-title"><i class="fa-solid fa-key text-green"></i> Join Squad by Code</h3>
+      <button type="button" class="modal-close" data-close-modal>&times;</button>
+    </div>
+    <form id="joinByCodeForm" class="modal-body">
+      <div class="form-group">
+        <label for="teamCodeInput" class="form-label">Unique Team Code</label>
+        <input type="text" id="teamCodeInput" class="form-input font-mono" placeholder="e.g. FC-STR-1001" required style="text-transform: uppercase;">
+        <div class="form-help">Ask your squad captain for their 6-to-12 character team code.</div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" data-close-modal>Cancel</button>
+        <button type="submit" class="btn btn-primary">
+          <i class="fa-solid fa-user-plus"></i> Join Team
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/teams.js') }}"></script>
+{% endblock %}

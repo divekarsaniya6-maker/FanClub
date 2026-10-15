@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}Pitch Settlement – FanClub{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="container page-header-container">
+    <div>
+      <span class="badge-tag"><i class="fa-solid fa-receipt"></i> CHECKOUT &amp; SETTLEMENT</span>
+      <h1 class="page-header-title">Pitch Reservation Settlement</h1>
+      <p class="page-header-subtitle">Review your pitch reservation and confirm your payment settlement choice.</p>
+    </div>
+  </div>
+</div>
+
+<div class="container" style="margin-bottom: 5rem;">
+  <div class="payment-layout-grid">
+    <!-- Left Column: Real Settlement Options -->
+    <div class="payment-methods-card">
+      <h3 class="payment-card-title"><i class="fa-solid fa-wallet"></i> Payment Settlement Mode</h3>
+
+      <div class="settlement-options-list">
+        <!-- Option 1: Direct Pay at Ground (Active & Default) -->
+        <div class="settlement-option-card selected">
+          <div class="settlement-option-header">
+            <div class="settlement-radio-indicator active">
+              <i class="fa-solid fa-circle-check text-green"></i>
+            </div>
+            <div>
+              <h4 class="settlement-title">Pay at Turf Reception (Desk Settlement)</h4>
+              <p class="settlement-desc">
+                Your pitch slot is instantly locked in the database. Complete your ₹{{ "%.2f"|format(booking.amount) }} settlement via cash or UPI directly at the ground reception counter before kickoff.
+              </p>
+            </div>
+          </div>
+          <div class="settlement-badge-row">
+            <span class="badge-success-pill"><i class="fa-solid fa-check"></i> Immediate Ticket Issuance</span>
+            <span class="badge-green-pill">Zero Processing Fees</span>
+          </div>
+        </div>
+
+        <!-- Option 2: Online Payment Gateway (Transparently Labeled) -->
+        <div class="settlement-option-card disabled" style="opacity: 0.7; margin-top: 1.5rem; border-style: dashed;">
+          <div class="settlement-option-header">
+            <div class="settlement-radio-indicator">
+              <i class="fa-solid fa-ban text-muted"></i>
+            </div>
+            <div>
+              <h4 class="settlement-title" style="color: var(--text-secondary);">Online Payment Gateway (Razorpay / Stripe)</h4>
+              <p class="settlement-desc">
+                Online card &amp; UPI gateway integration is currently pending administrator API credentials configuration in environment variables.
+              </p>
+            </div>
+          </div>
+          <div class="settlement-badge-row">
+            <span class="badge-warning-pill"><i class="fa-solid fa-lock"></i> Requires RAZORPAY_KEY_ID in .env</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Confirmation Action -->
+      <form action="{{ url_for('booking_details', booking_id=booking.id) }}" method="GET" style="margin-top: 2rem;">
+        <button type="submit" class="btn btn-primary btn-block btn-lg">
+          <i class="fa-solid fa-ticket"></i> View Confirmed Admission Ticket Pass
+        </button>
+      </form>
+
+      <div class="payment-secure-footer" style="margin-top: 1.5rem;">
+        <i class="fa-solid fa-shield-halved text-green"></i> Slot reserved in database with unique booking code {{ booking.booking_code }}
+      </div>
+    </div>
+
+    <!-- Right Column: Booking Summary -->
+    <div class="payment-summary-card">
+      <h3 class="summary-card-title"><i class="fa-solid fa-ticket"></i> Reservation Summary</h3>
+
+      <div class="summary-venue-box">
+        <h4 class="summary-venue-name">{{ booking.venue_name }}</h4>
+        <p class="summary-venue-loc"><i class="fa-solid fa-location-dot"></i> {{ booking.location }}</p>
+      </div>
+
+      <div class="summary-details-list">
+        <div class="summary-item">
+          <span class="label"><i class="fa-regular fa-calendar"></i> Booking Date:</span>
+          <span class="value text-white">{{ booking.booking_date }}</span>
+        </div>
+        <div class="summary-item">
+          <span class="label"><i class="fa-regular fa-clock"></i> Allocated Slot:</span>
+          <span class="value text-green font-bold">{{ booking.time_slot }}</span>
+        </div>
+        <div class="summary-item">
+          <span class="label"><i class="fa-solid fa-user"></i> Contact Name:</span>
+          <span class="value text-white">{{ booking.contact_name }}</span>
+        </div>
+        <div class="summary-item">
+          <span class="label"><i class="fa-solid fa-phone"></i> Mobile Phone:</span>
+          <span class="value text-white">{{ booking.contact_phone }}</span>
+        </div>
+        <div class="summary-item">
+          <span class="label"><i class="fa-solid fa-hashtag"></i> Booking Code:</span>
+          <span class="value text-white font-mono">{{ booking.booking_code }}</span>
+        </div>
+      </div>
+
+      <div class="summary-pricing-breakdown">
+        <div class="summary-pricing-row">
+          <span>Pitch Slot Fee:</span>
+          <span>₹{{ "%.2f"|format(booking.amount) }}</span>
+        </div>
+        <div class="summary-pricing-row">
+          <span>Convenience Fee:</span>
+          <span class="text-green">₹0.00</span>
+        </div>
+        <div class="summary-divider"></div>
+        <div class="summary-pricing-row total">
+          <span>Total Payable:</span>
+          <span class="total-price">₹{{ "%.2f"|format(booking.amount) }}</span>
+        </div>
+      </div>
+
+      <div class="cancellation-preview-note">
+        <i class="fa-solid fa-circle-info"></i>
+        <span>Free cancellation up to 2 hours before kickoff via your "My Bookings" portal.</span>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

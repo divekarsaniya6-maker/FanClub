@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Users – FanClub Admin{% endblock %}
+
+{% block content %}
+<div class="page-header admin-page-header">
+  <div class="container page-header-container">
+    <div>
+      <span class="admin-role-badge"><i class="fa-solid fa-users-gear"></i> USER ACCOUNTS</span>
+      <h1 class="page-header-title">Platform Users & Roles</h1>
+      <p class="page-header-subtitle">Inspect registered players, verify contact details, and assign administrator privileges.</p>
+    </div>
+  </div>
+</div>
+
+<div class="container" style="margin-bottom: 5rem;">
+  <!-- Admin Sub Navigation Tabs -->
+  <div class="admin-nav-pills">
+    <a href="{{ url_for('admin_dashboard') }}" class="admin-pill"><i class="fa-solid fa-gauge"></i> Overview</a>
+    <a href="{{ url_for('admin_venues') }}" class="admin-pill"><i class="fa-solid fa-map-location-dot"></i> Manage Venues</a>
+    <a href="{{ url_for('admin_bookings') }}" class="admin-pill"><i class="fa-solid fa-ticket"></i> Manage Bookings</a>
+    <a href="{{ url_for('admin_users') }}" class="admin-pill active"><i class="fa-solid fa-users-gear"></i> Manage Users</a>
+  </div>
+
+  <!-- Search Toolbar -->
+  <div class="toolbar">
+    <div class="search-box">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" id="adminUserSearch" class="form-input" placeholder="Search users by name, email, or mobile...">
+    </div>
+  </div>
+
+  <div class="detail-card">
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>User Account</th>
+            <th>Contact Phone</th>
+            <th>Current Role</th>
+            <th>Pitch Bookings</th>
+            <th>Registered Since</th>
+            <th>Role Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in users %}
+            <tr class="admin-user-row">
+              <td>
+                <div class="table-user-cell">
+                  <div class="user-avatar-mini">{{ u.name[0] | upper }}</div>
+                  <div>
+                    <strong>{{ u.name }}</strong>
+                    <div class="font-xs text-muted">{{ u.email }}</div>
+                  </div>
+                </div>
+              </td>
+              <td><i class="fa-solid fa-phone text-muted font-xs"></i> {{ u.phone }}</td>
+              <td>
+                {% if u.role == 'admin' %}
+                  <span class="badge-admin-pill"><i class="fa-solid fa-shield"></i> Admin</span>
+                {% else %}
+                  <span class="badge-player-table">Player</span>
+                {% endif %}
+              </td>
+              <td><strong class="text-white">{{ u.booking_count or 0 }}</strong> bookings</td>
+              <td class="text-muted">{{ u.created_at[:10] }}</td>
+              <td>
+                {% if u.id != session.get('user_id') %}
+                  <button type="button" class="btn btn-outline btn-xs btn-toggle-role" data-id="{{ u.id }}" data-role="{{ u.role }}">
+                    {% if u.role == 'admin' %}
+                      <i class="fa-solid fa-user-minus"></i> Demote to Player
+                    {% else %}
+                      <i class="fa-solid fa-user-shield"></i> Promote to Admin
+                    {% endif %}
+                  </button>
+                {% else %}
+                  <span class="font-xs text-muted">(Current Account)</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% endblock %}

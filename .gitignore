@@ -1,0 +1,47 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Environment variables & secrets
+.env
+.env.local
+.env.production
+
+# Local SQLite databases (exclude production/personal DB records)
+*.sqlite
+*.sqlite3
+*.db-journal
+test_*.db
+fanclub_local.db
+
+# Archives
+*.zip
+*.tar.gz
+
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS artifacts
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+
+# Log files
+*.log
+
+# Protect local database files
+*.db

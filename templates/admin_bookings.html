@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Bookings – FanClub Admin{% endblock %}
+
+{% block content %}
+<div class="page-header admin-page-header">
+  <div class="container page-header-container">
+    <div>
+      <span class="admin-role-badge"><i class="fa-solid fa-ticket"></i> BOOKING OPERATIONS</span>
+      <h1 class="page-header-title">Platform Bookings Ledger</h1>
+      <p class="page-header-subtitle">Inspect reservations, verify ground check-ins, and update booking statuses.</p>
+    </div>
+  </div>
+</div>
+
+<div class="container" style="margin-bottom: 5rem;">
+  <!-- Admin Sub Navigation Tabs -->
+  <div class="admin-nav-pills">
+    <a href="{{ url_for('admin_dashboard') }}" class="admin-pill"><i class="fa-solid fa-gauge"></i> Overview</a>
+    <a href="{{ url_for('admin_venues') }}" class="admin-pill"><i class="fa-solid fa-map-location-dot"></i> Manage Venues</a>
+    <a href="{{ url_for('admin_bookings') }}" class="admin-pill active"><i class="fa-solid fa-ticket"></i> Manage Bookings</a>
+    <a href="{{ url_for('admin_users') }}" class="admin-pill"><i class="fa-solid fa-users-gear"></i> Manage Users</a>
+  </div>
+
+  <!-- Search and Filter Toolbar -->
+  <div class="toolbar">
+    <div class="search-box">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" id="adminBookingSearch" class="form-input" placeholder="Search by booking code, player name, or venue...">
+    </div>
+
+    <div class="filter-group">
+      <select id="adminBookingStatusFilter" class="form-select">
+        <option value="">All Statuses</option>
+        <option value="confirmed">Confirmed</option>
+        <option value="completed">Completed</option>
+        <option value="cancelled">Cancelled</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="detail-card">
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Booking ID</th>
+            <th>Customer / Contact</th>
+            <th>Ground Venue</th>
+            <th>Date &amp; Time Slot</th>
+            <th>Pitch Rate</th>
+            <th>Settlement Status</th>
+            <th>Booking Status</th>
+            <th>Update Status</th>
+            <th>Voucher</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for b in bookings %}
+            <tr class="admin-booking-row" data-status="{{ b.status.lower() }}">
+              <td>
+                <span class="font-mono text-green font-bold">{{ b.booking_code }}</span>
+                <div class="font-xs text-muted">{{ b.created_at.strftime('%Y-%m-%d %H:%M') if b.created_at else '' }}</div>
+              </td>
+              <td>
+                <strong>{{ b.contact_name }}</strong>
+                <div class="font-xs text-muted"><i class="fa-solid fa-phone"></i> {{ b.contact_phone }}</div>
+              </td>
+              <td>
+                <strong>{{ b.venue_name }}</strong>
+                <div class="font-xs text-muted">{{ b.location }}</div>
+              </td>
+              <td>
+                <div><i class="fa-regular fa-calendar"></i> {{ b.booking_date }}</div>
+                <div class="font-xs text-green"><i class="fa-regular fa-clock"></i> {{ b.time_slot }}</div>
+              </td>
+              <td>
+                <strong class="text-white">₹{{ "%.2f"|format(b.amount) }}</strong>
+              </td>
+              <td>
+                <span class="text-green font-xs"><i class="fa-solid fa-receipt"></i> {{ b.payment_status }}</span>
+              </td>
+              <td>
+                <span class="status-pill status-{{ b.status.lower() }}">
+                  {{ b.status }}
+                </span>
+              </td>
+              <td>
+                <select class="form-select font-xs admin-booking-status-select" data-id="{{ b.id }}" style="padding: 0.35rem 0.6rem; min-width: 130px;">
+                  <option value="Confirmed" {% if b.status == 'Confirmed' %}selected{% endif %}>Confirmed</option>
+                  <option value="Completed" {% if b.status == 'Completed' %}selected{% endif %}>Completed</option>
+                  <option value="Cancelled" {% if b.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                </select>
+              </td>
+              <td>
+                <a href="{{ url_for('booking_details', booking_id=b.id) }}" class="btn btn-outline btn-xs" target="_blank">
+                  <i class="fa-solid fa-arrow-up-right-from-square"></i> Ticket
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% endblock %}

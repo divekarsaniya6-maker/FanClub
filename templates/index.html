@@ -1,0 +1,305 @@
+{% extends "base.html" %}
+
+{% block title %}FanClub – PLAY. BOOK. ENJOY. | Football Ground Booking{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section" style="background-image: linear-gradient(180deg, rgba(10, 13, 18, 0.75) 0%, rgba(10, 13, 18, 0.95) 100%), url('{{ url_for('static', filename='images/hero_football.jpg') }}');">
+  <div class="container hero-container">
+    <div class="hero-badge">
+      <i class="fa-solid fa-bolt"></i> PREMIER FOOTBALL TURF RESERVATIONS
+    </div>
+    <h1 class="hero-title">PLAY. BOOK. ENJOY.</h1>
+    <p class="hero-subheading">YOUR GAME. YOUR CLUB.</p>
+    <p class="hero-description">
+      Find your perfect football ground, reserve your time slot, build your team, and get ready for the game. Instant booking confirmations with zero double-booking tolerance.
+    </p>
+
+    <div class="hero-actions">
+      <a href="{{ url_for('venues') }}" class="btn btn-primary btn-lg">
+        <i class="fa-solid fa-calendar-check"></i> BOOK A GROUND
+      </a>
+      <a href="{{ url_for('venues') }}" class="btn btn-outline btn-lg">
+        <i class="fa-solid fa-compass"></i> EXPLORE VENUES
+      </a>
+    </div>
+
+    <!-- Quick Highlights -->
+    <div class="hero-highlights">
+      <div class="highlight-item">
+        <i class="fa-solid fa-circle-check"></i> Instant Slot Locking
+      </div>
+      <div class="highlight-item">
+        <i class="fa-solid fa-indian-rupee-sign"></i> ₹200 / Slot Standard
+      </div>
+      <div class="highlight-item">
+        <i class="fa-solid fa-shield-halved"></i> Guaranteed Pitch Availability
+      </div>
+      <div class="highlight-item">
+        <i class="fa-solid fa-users"></i> Squad &amp; Match Scheduling
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Real Database Statistics Section -->
+<section class="stats-section">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+        <div class="stat-number">{{ stats.total_users }}</div>
+        <div class="stat-label">Registered Players</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon"><i class="fa-solid fa-map-location-dot"></i></div>
+        <div class="stat-number">{{ stats.total_venues }}</div>
+        <div class="stat-label">Football Venues</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon"><i class="fa-solid fa-calendar-days"></i></div>
+        <div class="stat-number">{{ stats.total_bookings }}</div>
+        <div class="stat-label">Bookings Confirmed</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon"><i class="fa-solid fa-shield-cat"></i></div>
+        <div class="stat-number">{{ stats.total_teams }}</div>
+        <div class="stat-label">Active Football Teams</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Featured Venues Section -->
+<section class="section featured-venues-section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-badge"><i class="fa-solid fa-trophy"></i> TOP TURF FACILITIES</span>
+      <h2 class="section-title">Featured Grounds &amp; Arenas</h2>
+      <p class="section-subtitle">
+        High-grade synthetic turfs with LED floodlights, professional pitch markings, and amenities.
+      </p>
+    </div>
+
+    <div class="venues-grid">
+      {% for venue in featured_venues %}
+        <div class="venue-card" data-name="{{ venue.name }}" data-location="{{ venue.location }}" data-price="{{ venue.price_per_slot }}">
+          <div class="venue-image-wrapper">
+            <img src="{{ venue.image_url or url_for('static', filename='images/ryan_vibgyor.jpg') }}" alt="{{ venue.name }}" class="venue-image" onerror="this.src='{{ url_for('static', filename='images/ryan_vibgyor.jpg') }}'">
+            <div class="venue-price-badge">₹{{ "%.0f"|format(venue.price_per_slot) }} <span>/ slot</span></div>
+          </div>
+
+          <div class="venue-body">
+            <div class="venue-rating">
+              <i class="fa-solid fa-star text-warning"></i> {{ "%.1f"|format(venue.rating) }}
+              <span class="venue-sport"><i class="fa-solid fa-futbol"></i> {{ venue.sport }}</span>
+            </div>
+
+            <h3 class="venue-name">{{ venue.name }}</h3>
+            <p class="venue-location"><i class="fa-solid fa-location-dot"></i> {{ venue.location }}</p>
+
+            {% if venue.facilities %}
+              <div class="venue-facilities-pills">
+                {% for facility in venue.facilities.split(',')[:3] %}
+                  <span class="facility-pill"><i class="fa-solid fa-check"></i> {{ facility.strip() }}</span>
+                {% endfor %}
+              </div>
+            {% endif %}
+
+            <div class="venue-footer">
+              <a href="{{ url_for('venue_details', venue_id=venue.id) }}" class="btn btn-primary btn-block">
+                <i class="fa-solid fa-calendar-plus"></i> View Slots &amp; Book
+              </a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="section-footer-cta">
+      <a href="{{ url_for('venues') }}" class="btn btn-outline btn-lg">
+        Explore All Venues <i class="fa-solid fa-arrow-right"></i>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- How It Works Section -->
+<section id="how-it-works" class="section how-it-works-section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-badge"><i class="fa-solid fa-route"></i> 5 EASY STEPS</span>
+      <h2 class="section-title">How FanClub Works</h2>
+      <p class="section-subtitle">
+        Reserve your pitch in less than 2 minutes and prepare for matchday.
+      </p>
+    </div>
+
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-number">1</div>
+        <div class="step-icon"><i class="fa-solid fa-magnifying-glass-location"></i></div>
+        <h3 class="step-title">Find a Ground</h3>
+        <p class="step-desc">Browse FIFA-grade pitches and local football arenas filtered by city and price.</p>
+      </div>
+
+      <div class="step-card">
+        <div class="step-number">2</div>
+        <div class="step-icon"><i class="fa-regular fa-calendar-check"></i></div>
+        <h3 class="step-title">Select Date &amp; Time</h3>
+        <p class="step-desc">Check real-time slot availability for any date and select an open 1-hour slot.</p>
+      </div>
+
+      <div class="step-card">
+        <div class="step-number">3</div>
+        <div class="step-icon"><i class="fa-solid fa-clipboard-user"></i></div>
+        <h3 class="step-title">Enter Details</h3>
+        <p class="step-desc">Provide your contact name and mobile number to assign the pitch reservation.</p>
+      </div>
+
+      <div class="step-card">
+        <div class="step-number">4</div>
+        <div class="step-icon"><i class="fa-solid fa-shield-check"></i></div>
+        <h3 class="step-title">Confirm Reservation</h3>
+        <p class="step-desc">Lock your time slot in the database and receive an immediate reservation pass.</p>
+      </div>
+
+      <div class="step-card">
+        <div class="step-number">5</div>
+        <div class="step-icon"><i class="fa-solid fa-qrcode"></i></div>
+        <h3 class="step-title">Get Confirmation</h3>
+        <p class="step-desc">Receive your unique booking ticket ID instantly, valid for pitch entry.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Key Platform Features -->
+<section class="section features-section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-badge"><i class="fa-solid fa-gear"></i> COMPLETE ECOSYSTEM</span>
+      <h2 class="section-title">Built For The Football Community</h2>
+      <p class="section-subtitle">Everything players, squad captains, and ground administrators need.</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fa-solid fa-calendar-day"></i></div>
+        <h3 class="feature-title">Easy Ground Booking</h3>
+        <p class="feature-desc">Real-time slot availability checking with zero double-booking tolerance.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fa-solid fa-shield-halved"></i></div>
+        <h3 class="feature-title">Secure User Accounts</h3>
+        <p class="feature-desc">Encrypted passwords, secure sessions, and personalized player profiles.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fa-solid fa-people-group"></i></div>
+        <h3 class="feature-title">Team Creation</h3>
+        <p class="feature-desc">Form your local squad, generate a unique team code, and recruit teammates.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fa-solid fa-futbol"></i></div>
+        <h3 class="feature-title">Match Scheduling</h3>
+        <p class="feature-desc">Schedule friendlies against opposing teams at confirmed ground venues.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
+        <h3 class="feature-title">Booking History</h3>
+        <p class="feature-desc">Track all your past and upcoming reservations with instant cancellation options.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+        <h3 class="feature-title">Admin Management</h3>
+        <p class="feature-desc">Comprehensive administrative controls to manage venues, slots, and users.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Community Testimonials -->
+<section class="section testimonials-section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-badge"><i class="fa-solid fa-comments"></i> COMMUNITY VOICES</span>
+      <h2 class="section-title">Player Testimonials</h2>
+      <p class="section-subtitle">What local footballers and squad captains say about FanClub.</p>
+    </div>
+
+    <div class="testimonials-grid">
+      <div class="testimonial-card">
+        <div class="testimonial-stars">
+          <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+        </div>
+        <p class="testimonial-text">
+          "Booking our weekend 7v7 slot at Ryan Vibgyor KPC Empyrean has never been easier. The slot locking system ensures no overlap with other teams."
+        </p>
+        <div class="testimonial-author">
+          <div class="author-avatar">SP</div>
+          <div class="author-info">
+            <span class="author-name">Saniya Patil</span>
+            <span class="author-team">Captain, Kharghar Strikers</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card">
+        <div class="testimonial-stars">
+          <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+        </div>
+        <p class="testimonial-text">
+          "Instant booking confirmation and digital ticket passes make match preparation seamless for our weekend league fixtures."
+        </p>
+        <div class="testimonial-author">
+          <div class="author-avatar">RD</div>
+          <div class="author-info">
+            <span class="author-name">Rahul Deshmukh</span>
+            <span class="author-team">Midfielder, Panvel Football Club</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card">
+        <div class="testimonial-stars">
+          <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+        </div>
+        <p class="testimonial-text">
+          "Having squad rosters, match fixtures, and pitch bookings in one unified portal is a game changer for Navi Mumbai football squads."
+        </p>
+        <div class="testimonial-author">
+          <div class="author-avatar">AK</div>
+          <div class="author-info">
+            <span class="author-name">Aditya Kadam</span>
+            <span class="author-team">Navi Mumbai Titans</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Call to Action Banner -->
+<section class="section cta-section">
+  <div class="container">
+    <div class="cta-card">
+      <div class="cta-content">
+        <h2 class="cta-title">Ready To Hit The Pitch?</h2>
+        <p class="cta-text">
+          Book your football ground slot at Ryan Vibgyor KPC Empyrean or explore other Navi Mumbai arenas now.
+        </p>
+      </div>
+      <div class="cta-buttons">
+        <a href="{{ url_for('venues') }}" class="btn btn-primary btn-lg">
+          <i class="fa-solid fa-futbol"></i> Book A Pitch Now
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

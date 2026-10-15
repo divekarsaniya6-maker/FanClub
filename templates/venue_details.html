@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block title %}{{ venue.name }} – Ground Booking | FanClub{% endblock %}
+
+{% block content %}
+<div class="venue-detail-hero">
+  <div class="container">
+    <div class="breadcrumb">
+      <a href="{{ url_for('index') }}"><i class="fa-solid fa-house"></i> Home</a>
+      <span>/</span>
+      <a href="{{ url_for('venues') }}">Venues</a>
+      <span>/</span>
+      <span class="breadcrumb-current">{{ venue.name }}</span>
+    </div>
+
+    <div class="venue-header-row">
+      <div>
+        <div class="venue-badges-top">
+          <span class="badge-tag"><i class="fa-solid fa-futbol"></i> {{ venue.sport }}</span>
+          <span class="venue-rating-badge"><i class="fa-solid fa-star"></i> {{ "%.1f"|format(venue.rating) }} Rating</span>
+        </div>
+        <h1 class="venue-detail-title">{{ venue.name }}</h1>
+        <p class="venue-detail-location"><i class="fa-solid fa-location-dot"></i> {{ venue.location }}</p>
+      </div>
+
+      <div class="venue-pricing-card">
+        <div class="pricing-label">Standard Slot Rate</div>
+        <div class="pricing-val">₹{{ "%.0f"|format(venue.price_per_slot) }} <span class="pricing-unit">/ 1-Hour Slot</span></div>
+        <div class="pricing-sub">Asia/Kolkata Timezone</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container" style="margin-bottom: 5rem;">
+  <div class="venue-layout-grid">
+    <!-- Left Column: Venue Information & Gallery -->
+    <div class="venue-info-column">
+      <div class="venue-image-showcase">
+        <img src="{{ venue.image_url or url_for('static', filename='images/ryan_vibgyor.jpg') }}" alt="{{ venue.name }}" class="showcase-img" onerror="this.src='{{ url_for('static', filename='images/ryan_vibgyor.jpg') }}'">
+      </div>
+
+      <!-- About Ground -->
+      <div class="detail-card">
+        <h3 class="detail-card-title"><i class="fa-solid fa-circle-info"></i> About This Venue</h3>
+        <p class="detail-card-desc">{{ venue.description }}</p>
+      </div>
+
+      <!-- Facilities & Amenities -->
+      <div class="detail-card">
+        <h3 class="detail-card-title"><i class="fa-solid fa-list-check"></i> Facilities &amp; Amenities</h3>
+        {% if venue.facilities %}
+          <div class="facilities-grid">
+            {% for item in venue.facilities.split(',') %}
+              <div class="facility-item">
+                <i class="fa-solid fa-circle-check text-green"></i>
+                <span>{{ item.strip() }}</span>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="text-muted">Standard turf lighting and boundary fencing available.</p>
+        {% endif %}
+      </div>
+
+      <!-- Ground Rules & Policies -->
+      <div class="detail-card">
+        <h3 class="detail-card-title"><i class="fa-solid fa-clipboard-list"></i> Pitch Rules &amp; Policies</h3>
+        <ul class="rules-list">
+          <li><i class="fa-solid fa-shield-cat"></i> Molded football studs or turf shoes are required (no metal studs).</li>
+          <li><i class="fa-solid fa-clock"></i> Arrive 10 minutes prior to your allocated time slot for kit preparation.</li>
+          <li><i class="fa-solid fa-ban"></i> Smoking, chewing gum, and glass containers are strictly prohibited on the turf.</li>
+          <li><i class="fa-solid fa-rotate-left"></i> Bookings can be cancelled up to 2 hours before the slot start time.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Right Column: Interactive Booking Widget -->
+    <div class="venue-booking-column">
+      <div class="booking-widget-card">
+        <div class="widget-header">
+          <h3 class="widget-title"><i class="fa-solid fa-calendar-plus"></i> Reserve Ground Slot</h3>
+          <p class="widget-subtitle">Select your preferred date &amp; available one-hour slot.</p>
+        </div>
+
+        <form id="groundBookingForm" class="booking-form">
+          <input type="hidden" id="venueId" value="{{ venue.id }}">
+          <input type="hidden" id="selectedTimeSlot" name="time_slot" required>
+
+          <!-- Date Selector -->
+          <div class="form-group">
+            <label for="bookingDate" class="form-label">
+              <i class="fa-regular fa-calendar"></i> Select Booking Date
+            </label>
+            <input type="date" id="bookingDate" class="form-input" required>
+            <div class="form-help">Time slots are aligned with IST (Asia/Kolkata).</div>
+          </div>
+
+          <!-- Time Slot Selection Grid -->
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fa-regular fa-clock"></i> Available 1-Hour Time Slots
+            </label>
+            <div id="slotsContainer" class="slots-grid">
+              <!-- Dynamically populated via booking.js -->
+            </div>
+            <div class="slot-legend">
+              <span class="legend-item"><span class="legend-dot available"></span> Available</span>
+              <span class="legend-item"><span class="legend-dot booked"></span> Booked / Taken</span>
+              <span class="legend-item"><span class="legend-dot selected"></span> Selected</span>
+            </div>
+          </div>
+
+          <!-- Contact Details -->
+          <div class="form-group">
+            <label for="contactName" class="form-label">
+              <i class="fa-solid fa-user"></i> Full Name
+            </label>
+            <input type="text" id="contactName" class="form-input" value="{{ session.get('user_name', '') }}" placeholder="Enter your full name" required>
+          </div>
+
+          <div class="form-group">
+            <label for="contactPhone" class="form-label">
+              <i class="fa-solid fa-phone"></i> Mobile Phone Number
+            </label>
+            <input type="tel" id="contactPhone" class="form-input" value="{{ session.get('user_phone', '') }}" placeholder="e.g. 9820123456" pattern="[0-9]{10}" title="Please enter a valid 10-digit mobile number" required>
+          </div>
+
+          <!-- Booking Summary & Breakdown -->
+          <div class="booking-breakdown-card">
+            <div class="breakdown-row">
+              <span>Ground:</span>
+              <strong class="text-white">{{ venue.name }}</strong>
+            </div>
+            <div class="breakdown-row">
+              <span>Selected Date:</span>
+              <strong id="summarySelectedDate" class="text-white">Today</strong>
+            </div>
+            <div class="breakdown-row">
+              <span>Selected Slot:</span>
+              <strong id="summarySelectedSlot" class="text-green">Select a slot</strong>
+            </div>
+            <div class="breakdown-divider"></div>
+            <div class="breakdown-row">
+              <span>Slot Rate (1 Hour):</span>
+              <span>₹{{ "%.2f"|format(venue.price_per_slot) }}</span>
+            </div>
+            <div class="breakdown-row">
+              <span>Platform Fee:</span>
+              <span class="text-green">₹0.00</span>
+            </div>
+            <div class="breakdown-row total-row">
+              <span>Total Payable:</span>
+              <span class="total-amount">₹{{ "%.2f"|format(venue.price_per_slot) }}</span>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" id="btnSubmitBooking" class="btn btn-primary btn-block btn-lg" disabled>
+            <i class="fa-solid fa-calendar-check"></i> Confirm Pitch Reservation
+          </button>
+
+          <p class="widget-secure-note">
+            <i class="fa-solid fa-shield-halved text-green"></i> Real-time slot locking with instant entry pass confirmation.
+          </p>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/booking.js') }}"></script>
+{% endblock %}

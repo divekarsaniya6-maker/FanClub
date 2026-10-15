@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}Administrator Dashboard – FanClub Console{% endblock %}
+
+{% block content %}
+<div class="page-header admin-page-header">
+  <div class="container page-header-container">
+    <div>
+      <span class="admin-role-badge"><i class="fa-solid fa-shield-halved"></i> SUPER ADMIN ACCESS</span>
+      <h1 class="page-header-title">Platform Overview</h1>
+      <p class="page-header-subtitle">Real-time statistics, turf facility operations, and booking activity.</p>
+    </div>
+    <div class="header-actions">
+      <a href="{{ url_for('admin_venues') }}" class="btn btn-primary btn-sm">
+        <i class="fa-solid fa-plus"></i> Add New Ground
+      </a>
+      <a href="{{ url_for('admin_bookings') }}" class="btn btn-outline btn-sm">
+        <i class="fa-solid fa-ticket"></i> All Bookings
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="container" style="margin-bottom: 5rem;">
+  <!-- Admin Sub Navigation Tabs -->
+  <div class="admin-nav-pills">
+    <a href="{{ url_for('admin_dashboard') }}" class="admin-pill active"><i class="fa-solid fa-gauge"></i> Overview</a>
+    <a href="{{ url_for('admin_venues') }}" class="admin-pill"><i class="fa-solid fa-map-location-dot"></i> Manage Venues</a>
+    <a href="{{ url_for('admin_bookings') }}" class="admin-pill"><i class="fa-solid fa-ticket"></i> Manage Bookings</a>
+    <a href="{{ url_for('admin_users') }}" class="admin-pill"><i class="fa-solid fa-users-gear"></i> Manage Users</a>
+  </div>
+
+  <!-- Key Metric Statistics -->
+  <div class="stats-grid" style="margin-bottom: 2.5rem;">
+    <div class="stat-card">
+      <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+      <div class="stat-number">{{ stats.total_users }}</div>
+      <div class="stat-label">Registered Accounts</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon"><i class="fa-solid fa-map-pin"></i></div>
+      <div class="stat-number">{{ stats.total_venues }}</div>
+      <div class="stat-label">Active Football Pitches</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon"><i class="fa-solid fa-calendar-check"></i></div>
+      <div class="stat-number">{{ stats.total_bookings }}</div>
+      <div class="stat-label">Platform Bookings</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+      <div class="stat-number">₹{{ "%.0f"|format(stats.total_revenue) }}</div>
+      <div class="stat-label">Total Booking Value</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon"><i class="fa-solid fa-futbol"></i></div>
+      <div class="stat-number">{{ stats.total_matches }}</div>
+      <div class="stat-label">Matches Scheduled</div>
+    </div>
+  </div>
+
+  <!-- Recent Booking Activity -->
+  <div class="detail-card">
+    <div class="roster-header">
+      <div>
+        <h3 class="detail-card-title"><i class="fa-solid fa-clock-rotate-left"></i> Recent Booking Activity</h3>
+        <p class="text-muted font-xs">Latest pitch slot reservations across all grounds.</p>
+      </div>
+      <a href="{{ url_for('admin_bookings') }}" class="btn btn-outline btn-sm">View Full Ledger</a>
+    </div>
+
+    {% if recent_bookings %}
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Booking ID</th>
+              <th>Player / Contact</th>
+              <th>Venue</th>
+              <th>Date & Slot</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for b in recent_bookings %}
+              <tr class="admin-booking-row" data-status="{{ b.status.lower() }}">
+                <td><span class="font-mono text-green font-bold">{{ b.booking_code }}</span></td>
+                <td>
+                  <strong>{{ b.contact_name }}</strong>
+                  <div class="font-xs text-muted">{{ b.contact_phone }}</div>
+                </td>
+                <td>{{ b.venue_name }}</td>
+                <td>
+                  <div>{{ b.booking_date }}</div>
+                  <div class="font-xs text-green">{{ b.time_slot }}</div>
+                </td>
+                <td><strong>₹{{ "%.2f"|format(b.amount) }}</strong></td>
+                <td>
+                  <span class="status-pill status-{{ b.status.lower() }}">
+                    {{ b.status }}
+                  </span>
+                </td>
+                <td>
+                  <a href="{{ url_for('booking_details', booking_id=b.id) }}" class="btn btn-outline btn-sm">
+                    Voucher
+                  </a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="empty-state" style="padding: 2.5rem 1rem;">
+        <div class="empty-icon"><i class="fa-solid fa-calendar-xmark"></i></div>
+        <p class="empty-desc">No bookings recorded yet in the database.</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% endblock %}

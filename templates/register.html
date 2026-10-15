@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Register New Account – FanClub{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+  <div class="auth-card" style="max-width: 520px;">
+    <div class="auth-header">
+      <div class="auth-badge">
+        <i class="fa-solid fa-user-plus"></i> NEW PLAYER REGISTRATION
+      </div>
+      <h1 class="auth-title">Join FanClub</h1>
+      <p class="auth-subtitle">Create your player profile to reserve pitches and build your football squad.</p>
+    </div>
+
+    <form method="POST" action="{{ url_for('register') }}" class="auth-form" id="registerForm">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+      <div class="form-group">
+        <label for="name" class="form-label">
+          <i class="fa-solid fa-user"></i> Full Name
+        </label>
+        <input type="text" id="name" name="name" class="form-input" placeholder="e.g. Saniya Patil" required autofocus>
+      </div>
+
+      <div class="form-group">
+        <label for="email" class="form-label">
+          <i class="fa-solid fa-envelope"></i> Email Address
+        </label>
+        <input type="email" id="email" name="email" class="form-input" placeholder="e.g. player@domain.com" required>
+      </div>
+
+      <div class="form-group">
+        <label for="phone" class="form-label">
+          <i class="fa-solid fa-phone"></i> Mobile Phone Number
+        </label>
+        <input type="tel" id="phone" name="phone" class="form-input" placeholder="e.g. 9820123456" pattern="[0-9]{10}" title="Please enter a valid 10-digit mobile number" required>
+      </div>
+
+      <div class="form-row" style="display: flex; gap: 1rem;">
+        <div class="form-group" style="flex: 1;">
+          <label for="password" class="form-label">
+            <i class="fa-solid fa-lock"></i> Password
+          </label>
+          <input type="password" id="password" name="password" class="form-input" placeholder="At least 8 chars" minlength="8" required>
+        </div>
+
+        <div class="form-group" style="flex: 1;">
+          <label for="confirm_password" class="form-label">
+            <i class="fa-solid fa-lock-open"></i> Confirm Password
+          </label>
+          <input type="password" id="confirm_password" name="confirm_password" class="form-input" placeholder="Repeat password" minlength="8" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="remember-label" style="font-size: 0.85rem;">
+          <input type="checkbox" required checked>
+          <span>I agree to the FanClub Terms of Service and Pitch Booking Policies.</span>
+        </label>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block btn-lg">
+        <i class="fa-solid fa-user-plus"></i> Create Player Account
+      </button>
+
+      <div class="auth-footer-text">
+        Already registered?
+        <a href="{{ url_for('login') }}" class="text-green font-bold">Sign In here</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

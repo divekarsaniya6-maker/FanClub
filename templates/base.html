@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="{{ csrf_token }}">
+  <title>{% block title %}FanClub – Professional Football Ground Booking & Community{% endblock %}</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Core CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="container nav-container">
+      <a href="{{ url_for('index') }}" class="nav-brand">
+        <span class="brand-icon"><i class="fa-solid fa-futbol"></i></span>
+        <div class="brand-text">
+          <span class="brand-title">FANCLUB</span>
+          <span class="brand-tagline">YOUR GAME. YOUR CLUB.</span>
+        </div>
+      </a>
+
+      <!-- Desktop Nav -->
+      <nav class="nav-menu">
+        <ul class="nav-links">
+          <li><a href="{{ url_for('index') }}" class="nav-link {% if active_page == 'home' %}active{% endif %}">Home</a></li>
+          <li><a href="{{ url_for('venues') }}" class="nav-link {% if active_page == 'venues' %}active{% endif %}">Venues</a></li>
+          <li><a href="{{ url_for('index') }}#how-it-works" class="nav-link">How It Works</a></li>
+          <li><a href="{{ url_for('teams') }}" class="nav-link {% if active_page == 'teams' %}active{% endif %}">Teams</a></li>
+          <li><a href="{{ url_for('matches') }}" class="nav-link {% if active_page == 'matches' %}active{% endif %}">Matches</a></li>
+          {% if session.get('user_id') %}
+            <li><a href="{{ url_for('bookings') }}" class="nav-link {% if active_page == 'bookings' %}active{% endif %}">My Bookings</a></li>
+          {% endif %}
+        </ul>
+
+        <div class="nav-actions">
+          {% if session.get('user_id') %}
+            <div class="user-menu-wrapper">
+              <button class="user-menu-trigger" type="button" aria-label="Open User Menu">
+                <div class="user-avatar-badge">{{ session.get('user_name', 'Player')[0] | upper }}</div>
+                <span class="user-name-label">{{ session.get('user_name', 'Player') }}</span>
+                {% if session.get('user_role') == 'admin' %}
+                  <span class="badge-admin-pill">ADMIN</span>
+                {% endif %}
+                <i class="fa-solid fa-chevron-down nav-caret"></i>
+              </button>
+
+              <div class="user-dropdown">
+                <div class="dropdown-header">
+                  <div class="dropdown-name">{{ session.get('user_name') }}</div>
+                  <div class="dropdown-email">{{ session.get('user_email') }}</div>
+                </div>
+                <div class="dropdown-divider"></div>
+                {% if session.get('user_role') == 'admin' %}
+                  <a href="{{ url_for('admin_dashboard') }}" class="dropdown-item text-green">
+                    <i class="fa-solid fa-gauge-high"></i> Admin Console
+                  </a>
+                {% endif %}
+                <a href="{{ url_for('bookings') }}" class="dropdown-item">
+                  <i class="fa-solid fa-ticket"></i> My Bookings
+                </a>
+                <a href="{{ url_for('profile') }}" class="dropdown-item">
+                  <i class="fa-solid fa-user-gear"></i> Player Profile
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="{{ url_for('logout') }}" class="dropdown-item text-danger">
+                  <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out
+                </a>
+              </div>
+            </div>
+          {% else %}
+            <a href="{{ url_for('login') }}" class="btn btn-outline btn-sm">
+              <i class="fa-solid fa-arrow-right-to-bracket"></i> Login
+            </a>
+            <a href="{{ url_for('register') }}" class="btn btn-primary btn-sm">
+              <i class="fa-solid fa-user-plus"></i> Join FanClub
+            </a>
+          {% endif %}
+        </div>
+      </nav>
+
+      <!-- Mobile Hamburger Button -->
+      <button class="mobile-toggle" type="button" aria-label="Toggle Navigation">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Flash Notifications -->
+  <div class="flash-container container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category if category != 'message' else 'info' }} alert-dismissible" role="alert">
+            <span class="alert-icon">
+              {% if category == 'success' %}
+                <i class="fa-solid fa-circle-check"></i>
+              {% elif category == 'error' or category == 'danger' %}
+                <i class="fa-solid fa-circle-exclamation"></i>
+              {% elif category == 'warning' %}
+                <i class="fa-solid fa-triangle-exclamation"></i>
+              {% else %}
+                <i class="fa-solid fa-circle-info"></i>
+              {% endif %}
+            </span>
+            <span class="alert-message">{{ message }}</span>
+            <button type="button" class="alert-close" aria-label="Close Alert">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+  </div>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-container">
+      <div class="footer-grid">
+        <!-- Brand Column -->
+        <div class="footer-col brand-col">
+          <div class="footer-brand">
+            <span class="brand-icon"><i class="fa-solid fa-futbol"></i></span>
+            <span class="brand-title">FANCLUB</span>
+          </div>
+          <p class="footer-tagline">YOUR GAME. YOUR CLUB.</p>
+          <p class="footer-description">
+            FanClub is a modern football pitch reservation and community platform engineered for players, teams, and tournament organizers. Reserve professional synthetic grounds seamlessly.
+          </p>
+          <div class="footer-live-badge">
+            <i class="fa-solid fa-shield-halved text-green"></i>
+            <span>Real-time Pitch Reservations &amp; Double-Booking Protection</span>
+          </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="footer-col">
+          <h4 class="footer-heading">Explore FanClub</h4>
+          <ul class="footer-links">
+            <li><a href="{{ url_for('index') }}"><i class="fa-solid fa-angle-right"></i> Home</a></li>
+            <li><a href="{{ url_for('venues') }}"><i class="fa-solid fa-angle-right"></i> Football Venues</a></li>
+            <li><a href="{{ url_for('teams') }}"><i class="fa-solid fa-angle-right"></i> Teams &amp; Squads</a></li>
+            <li><a href="{{ url_for('matches') }}"><i class="fa-solid fa-angle-right"></i> Match Fixtures</a></li>
+            <li><a href="{{ url_for('bookings') }}"><i class="fa-solid fa-angle-right"></i> My Bookings</a></li>
+          </ul>
+        </div>
+
+        <!-- Ground Info -->
+        <div class="footer-col">
+          <h4 class="footer-heading">Featured Ground</h4>
+          <p class="footer-venue-name"><i class="fa-solid fa-location-dot"></i> Ryan Vibgyor KPC Empyrean</p>
+          <p class="footer-venue-meta">Kharghar, Navi Mumbai, Maharashtra</p>
+          <p class="footer-venue-price">₹200 per 1-hour slot</p>
+          <div style="margin-top: 1rem;">
+            <a href="{{ url_for('venues') }}" class="btn btn-outline btn-sm">Reserve Slot</a>
+          </div>
+        </div>
+
+        <!-- Contact & Admin Access -->
+        <div class="footer-col">
+          <h4 class="footer-heading">Platform Info</h4>
+          <ul class="footer-contact-list">
+            <li><i class="fa-regular fa-clock"></i> Asia/Kolkata (IST Standard)</li>
+            <li><i class="fa-solid fa-envelope"></i> contact@fanclub.local</li>
+            <li><i class="fa-solid fa-database"></i> SQLite &amp; PostgreSQL Ready</li>
+          </ul>
+          <div class="footer-admin-link">
+            <a href="{{ url_for('admin_login') }}"><i class="fa-solid fa-lock"></i> Administrator Portal</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div class="copyright">
+          &copy; {{ current_year }} FanClub – Professional Football Ground Booking Platform. All rights reserved.
+        </div>
+        <div class="footer-bottom-links">
+          <span>Terms of Service</span>
+          <span>&bull;</span>
+          <span>Privacy Policy</span>
+          <span>&bull;</span>
+          <span>Fair Play Guidelines</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Core Scripts -->
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

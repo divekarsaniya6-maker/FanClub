@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block title %}Match Fixtures & Results – FanClub{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="container page-header-container">
+    <div>
+      <span class="badge-tag"><i class="fa-solid fa-futbol"></i> FIXTURES &amp; DERBIES</span>
+      <h1 class="page-header-title">Football Matches</h1>
+      <p class="page-header-subtitle">View scheduled club friendlies, challenge opposing teams, and track matchday results.</p>
+    </div>
+    <div>
+      {% if session.get('user_id') %}
+        <button type="button" id="btnOpenScheduleMatchModal" class="btn btn-primary">
+          <i class="fa-solid fa-calendar-plus"></i> Schedule Match
+        </button>
+      {% else %}
+        <a href="{{ url_for('login') }}" class="btn btn-primary">
+          <i class="fa-solid fa-arrow-right-to-bracket"></i> Login to Schedule Match
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="container" style="margin-bottom: 5rem;">
+  <!-- Filter Tabs -->
+  <div class="matches-filter-tabs">
+    <button type="button" class="match-tab-btn active" data-filter="upcoming">
+      <i class="fa-regular fa-clock"></i> Upcoming Fixtures
+    </button>
+    <button type="button" class="match-tab-btn" data-filter="past">
+      <i class="fa-solid fa-flag-checkered"></i> Completed &amp; Past
+    </button>
+    <button type="button" class="match-tab-btn" data-filter="all">
+      <i class="fa-solid fa-list"></i> All Fixtures
+    </button>
+  </div>
+
+  <!-- Matches Grid -->
+  <div class="matches-grid" id="matchesGrid">
+    {% for m in matches %}
+      <div class="match-card" data-status="{{ m.status.lower() }}">
+        <div class="match-card-top">
+          <span class="match-venue-pill">
+            <i class="fa-solid fa-location-dot"></i> {{ m.venue.name if m.venue else 'Ryan Vibgyor KPC Empyrean' }}
+          </span>
+          <span class="status-pill status-{{ m.status.lower() }}">
+            {{ m.status }}
+          </span>
+        </div>
+
+        <div class="match-teams-versus">
+          <div class="match-team home-team">
+            <div class="team-initials">{{ m.home_team.name[:2] | upper if m.home_team else 'HT' }}</div>
+            <div class="team-title">{{ m.home_team.name if m.home_team else 'Home Team' }}</div>
+            <span class="team-tag">HOME</span>
+          </div>
+
+          <div class="match-vs-divider">
+            <span class="vs-text">VS</span>
+            <div class="match-timing-badge">
+              <i class="fa-regular fa-calendar"></i> {{ m.match_date }}<br>
+              <i class="fa-regular fa-clock"></i> {{ m.match_time }}
+            </div>
+          </div>
+
+          <div class="match-team away-team">
+            <div class="team-initials">{{ m.away_team.name[:2] | upper if m.away_team else 'AT' }}</div>
+            <div class="team-title">{{ m.away_team.name if m.away_team else 'Away Team' }}</div>
+            <span class="team-tag">AWAY</span>
+          </div>
+        </div>
+
+        {% if m.notes %}
+          <div class="match-notes-snippet">
+            <i class="fa-solid fa-circle-info"></i> {{ m.notes }}
+          </div>
+        {% endif %}
+
+        <div class="match-footer-tag">
+          <span class="text-muted"><i class="fa-solid fa-stopwatch"></i> Standard 60-min regulation friendly</span>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <div id="matchesEmptyState" class="empty-state" style="display: none;">
+    <div class="empty-icon"><i class="fa-solid fa-futbol"></i></div>
+    <h3 class="empty-title">No matches found in this category</h3>
+    <p class="empty-desc">Check back soon or schedule a new friendly fixture between your squad and another team.</p>
+  </div>
+</div>
+
+<!-- Modal: Schedule Match -->
+<div id="scheduleMatchModal" class="modal-overlay">
+  <div class="modal-card" style="max-width: 540px;">
+    <div class="modal-header">
+      <h3 class="modal-title"><i class="fa-solid fa-calendar-plus text-green"></i> Schedule Match Fixture</h3>
+      <button type="button" class="modal-close" data-close-modal>&times;</button>
+    </div>
+    <form id="scheduleMatchForm" class="modal-body">
+      <div class="form-group">
+        <label for="matchHomeTeam" class="form-label">Home Team</label>
+        <select id="matchHomeTeam" class="form-select" required>
+          <option value="">Select your squad</option>
+          {% for t in user_teams %}
+            <option value="{{ t.id }}">{{ t.name }} (Captain / Member)</option>
+          {% endfor %}
+          {% if not user_teams %}
+            {% for t in all_teams %}
+              <option value="{{ t.id }}">{{ t.name }}</option>
+            {% endfor %}
+          {% endif %}
+        </select>
+        {% if not user_teams %}
+          <div class="form-help">Tip: Create or join a team first to register under your own squad.</div>
+        {% endif %}
+      </div>
+
+      <div class="form-group">
+        <label for="matchAwayTeam" class="form-label">Opposing Squad</label>
+        <select id="matchAwayTeam" class="form-select" required>
+          <option value="">Select opponent team</option>
+          {% for t in all_teams %}
+            <option value="{{ t.id }}">{{ t.name }} ({{ t.city }})</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="matchVenue" class="form-label">Venue / Pitch</label>
+        <select id="matchVenue" class="form-select" required>
+          <option value="">Select football pitch</option>
+          {% for v in venues %}
+            <option value="{{ v.id }}">{{ v.name }} – {{ v.location }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-row" style="display: flex; gap: 1rem;">
+        <div class="form-group" style="flex: 1;">
+          <label for="matchDate" class="form-label">Match Date</label>
+          <input type="date" id="matchDate" class="form-input" required>
+        </div>
+        <div class="form-group" style="flex: 1;">
+          <label for="matchTime" class="form-label">Time Slot</label>
+          <select id="matchTime" class="form-select" required>
+            <option value="6:00 AM – 7:00 AM">6:00 AM – 7:00 AM</option>
+            <option value="7:00 AM – 8:00 AM">7:00 AM – 8:00 AM</option>
+            <option value="8:00 AM – 9:00 AM" selected>8:00 AM – 9:00 AM</option>
+            <option value="9:00 AM – 10:00 AM">9:00 AM – 10:00 AM</option>
+            <option value="10:00 PM – 11:00 PM">10:00 PM – 11:00 PM</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="matchNotes" class="form-label">Match Details / Friendly Notes</label>
+        <input type="text" id="matchNotes" class="form-input" placeholder="e.g. 7v7 friendly rules, yellow bibs vs blue bibs">
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" data-close-modal>Cancel</button>
+        <button type="submit" class="btn btn-primary">
+          <i class="fa-solid fa-check"></i> Confirm Fixture
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/matches.js') }}"></script>
+{% endblock %}

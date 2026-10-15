@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Football Venues & Grounds – FanClub{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="container page-header-container">
+    <div>
+      <span class="badge-tag"><i class="fa-solid fa-map-location-dot"></i> TURF DIRECTORY</span>
+      <h1 class="page-header-title">Football Grounds &amp; Arenas</h1>
+      <p class="page-header-subtitle">Find, compare, and reserve top-tier football turfs across Navi Mumbai.</p>
+    </div>
+  </div>
+</div>
+
+<div class="container" style="margin-bottom: 4rem;">
+  <!-- Filter & Search Toolbar -->
+  <div class="toolbar">
+    <div class="search-box">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" id="venueSearch" class="form-input" placeholder="Search by turf name or location (e.g. Kharghar, Panvel)...">
+    </div>
+
+    <div class="filter-group">
+      <select id="locationFilter" class="form-select">
+        <option value="">All Locations</option>
+        <option value="Kharghar">Kharghar</option>
+        <option value="Panvel">Panvel</option>
+        <option value="Navi Mumbai">Navi Mumbai</option>
+      </select>
+
+      <select id="priceFilter" class="form-select">
+        <option value="">Max Price: Any</option>
+        <option value="200">Up to ₹200 / slot</option>
+        <option value="300">Up to ₹300 / slot</option>
+        <option value="500">Up to ₹500 / slot</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Venues Grid -->
+  <div class="venues-grid" id="venuesGrid">
+    {% for venue in venues %}
+      <div class="venue-card" data-name="{{ venue.name }}" data-location="{{ venue.location }}" data-price="{{ venue.price_per_slot }}">
+        <div class="venue-image-wrapper">
+          <img src="{{ venue.image_url or url_for('static', filename='images/ryan_vibgyor.jpg') }}" alt="{{ venue.name }}" class="venue-image" onerror="this.src='{{ url_for('static', filename='images/ryan_vibgyor.jpg') }}'">
+          <div class="venue-price-badge">₹{{ "%.0f"|format(venue.price_per_slot) }} <span>/ slot</span></div>
+        </div>
+
+        <div class="venue-body">
+          <div class="venue-rating">
+            <i class="fa-solid fa-star text-warning"></i> {{ "%.1f"|format(venue.rating) }}
+            <span class="venue-sport"><i class="fa-solid fa-futbol"></i> {{ venue.sport }}</span>
+          </div>
+
+          <h3 class="venue-name">{{ venue.name }}</h3>
+          <p class="venue-location"><i class="fa-solid fa-location-dot"></i> {{ venue.location }}</p>
+
+          <p class="venue-desc-snippet">{{ venue.description[:130] }}...</p>
+
+          {% if venue.facilities %}
+            <div class="venue-facilities-pills">
+              {% for facility in venue.facilities.split(',')[:4] %}
+                <span class="facility-pill"><i class="fa-solid fa-check"></i> {{ facility.strip() }}</span>
+              {% endfor %}
+            </div>
+          {% endif %}
+
+          <div class="venue-footer">
+            <a href="{{ url_for('venue_details', venue_id=venue.id) }}" class="btn btn-primary btn-block">
+              <i class="fa-solid fa-calendar-check"></i> View Details &amp; Reserve Slot
+            </a>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- Empty Search State -->
+  <div id="venuesEmptyState" class="empty-state" style="display: none;">
+    <div class="empty-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
+    <h3 class="empty-title">No football grounds found</h3>
+    <p class="empty-desc">Try clearing your search query or adjusting your location and price filters.</p>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/booking.js') }}"></script>
+{% endblock %}

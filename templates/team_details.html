@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}{{ team.name }} – Squad Roster | FanClub{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="container page-header-container">
+    <div class="team-header-identity">
+      <div class="team-avatar-xl">{{ team.name[:2] | upper }}</div>
+      <div>
+        <div class="team-header-tags">
+          <span class="badge-tag"><i class="fa-solid fa-futbol"></i> FOOTBALL CLUB</span>
+          <span class="team-code-pill font-mono">CODE: {{ team.team_code }}</span>
+          <button type="button" class="btn-copy-code btn-icon-sm" data-code="{{ team.team_code }}" title="Copy Team Code">
+            <i class="fa-regular fa-copy"></i>
+          </button>
+        </div>
+        <h1 class="page-header-title">{{ team.name }}</h1>
+        <p class="page-header-subtitle"><i class="fa-solid fa-location-dot"></i> {{ team.city }} &bull; Founded {{ team.created_at[:10] }}</p>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      {% if session.get('user_id') %}
+        {% if is_member %}
+          {% if is_captain %}
+            <span class="badge-captain-pill"><i class="fa-solid fa-crown text-warning"></i> SQUAD CAPTAIN</span>
+            <a href="{{ url_for('matches') }}" class="btn btn-primary">
+              <i class="fa-solid fa-calendar-plus"></i> Schedule Match
+            </a>
+          {% else %}
+            <span class="badge-member-pill"><i class="fa-solid fa-circle-check text-green"></i> SQUAD MEMBER</span>
+            <button type="button" id="btnLeaveTeam" class="btn btn-outline-danger" data-team-id="{{ team.id }}">
+              <i class="fa-solid fa-arrow-right-from-bracket"></i> Leave Team
+            </button>
+          {% endif %}
+        {% else %}
+          <button type="button" id="btnJoinTeamDirect" class="btn btn-primary" data-team-id="{{ team.id }}">
+            <i class="fa-solid fa-user-plus"></i> Join This Squad
+          </button>
+        {% endif %}
+      {% else %}
+        <a href="{{ url_for('login') }}" class="btn btn-primary">
+          <i class="fa-solid fa-arrow-right-to-bracket"></i> Login to Join Squad
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="container" style="margin-bottom: 5rem;">
+  <div class="team-details-grid">
+    <!-- Left: Squad Info -->
+    <div class="team-info-col">
+      <div class="detail-card">
+        <h3 class="detail-card-title"><i class="fa-solid fa-circle-info"></i> About {{ team.name }}</h3>
+        <p class="detail-card-desc">{{ team.description or 'No squad description provided yet.' }}</p>
+
+        <div class="team-meta-list">
+          <div class="meta-row">
+            <span class="text-muted">Team Captain:</span>
+            <strong class="text-white">{{ team.captain_name }}</strong>
+          </div>
+          <div class="meta-row">
+            <span class="text-muted">Home Ground:</span>
+            <span class="text-green">Kharghar / Navi Mumbai Turfs</span>
+          </div>
+          <div class="meta-row">
+            <span class="text-muted">Registered Roster:</span>
+            <strong class="text-white">{{ members | length }} Active Players</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Action Box -->
+      <div class="detail-card" style="margin-top: 1.5rem;">
+        <h4 class="detail-card-title"><i class="fa-solid fa-share-nodes"></i> Recruit Teammates</h4>
+        <p class="text-muted" style="font-size: 0.9rem;">Share this unique team code with fellow footballers so they can join your squad directly:</p>
+        <div class="team-share-code-box">
+          <span class="font-mono text-green font-bold">{{ team.team_code }}</span>
+          <button type="button" class="btn btn-outline btn-sm btn-copy-code" data-code="{{ team.team_code }}">
+            <i class="fa-regular fa-copy"></i> Copy Code
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Squad Roster Table -->
+    <div class="team-roster-col">
+      <div class="detail-card">
+        <div class="roster-header">
+          <h3 class="detail-card-title"><i class="fa-solid fa-users"></i> Official Squad Roster</h3>
+          <span class="badge-green-pill">{{ members | length }} Players</span>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Player</th>
+                <th>Role</th>
+                <th>Joined Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for m in members %}
+                <tr>
+                  <td>
+                    <div class="table-user-cell">
+                      <div class="user-avatar-mini">{{ m.name[0] | upper }}</div>
+                      <div>
+                        <strong>{{ m.name }}</strong>
+                        <div class="text-muted font-xs">{{ m.email }}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    {% if m.role == 'Captain' %}
+                      <span class="badge-captain-table"><i class="fa-solid fa-crown text-warning"></i> Captain</span>
+                    {% else %}
+                      <span class="badge-player-table">Player</span>
+                    {% endif %}
+                  </td>
+                  <td class="text-muted">{{ m.joined_at[:10] }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/teams.js') }}"></script>
+{% endblock %}

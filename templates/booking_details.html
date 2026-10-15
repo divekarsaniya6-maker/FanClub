@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}Booking Pass: {{ booking.booking_code }} – FanClub{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="container page-header-container">
+    <div>
+      <span class="badge-tag"><i class="fa-solid fa-ticket"></i> RESERVATION PASS</span>
+      <h1 class="page-header-title">Booking Confirmation Voucher</h1>
+      <p class="page-header-subtitle">Present this digital ticket at the ground registration desk.</p>
+    </div>
+    <div class="header-actions">
+      <a href="{{ url_for('bookings') }}" class="btn btn-outline btn-sm">
+        <i class="fa-solid fa-arrow-left"></i> My Bookings
+      </a>
+      <button type="button" class="btn btn-outline btn-sm" onclick="window.print()">
+        <i class="fa-solid fa-print"></i> Print Ticket
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="container" style="margin-bottom: 5rem;">
+  <div class="ticket-container">
+    <!-- Ticket Card -->
+    <div class="ticket-card">
+      <div class="ticket-top-banner">
+        <div class="ticket-brand">
+          <i class="fa-solid fa-futbol text-green"></i>
+          <span>FANCLUB PASS</span>
+        </div>
+        <div class="ticket-status-pill status-{{ booking.status.lower() }}">
+          {{ booking.status | upper }}
+        </div>
+      </div>
+
+      <div class="ticket-body">
+        <div class="ticket-grid">
+          <!-- Main Details -->
+          <div class="ticket-main-col">
+            <h2 class="ticket-venue-name">{{ booking.venue_name }}</h2>
+            <p class="ticket-venue-loc"><i class="fa-solid fa-location-dot"></i> {{ booking.location }}</p>
+
+            <div class="ticket-meta-grid">
+              <div class="meta-item">
+                <span class="meta-label">MATCH / BOOKING DATE</span>
+                <span class="meta-val text-white"><i class="fa-regular fa-calendar"></i> {{ booking.booking_date }}</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">ALLOCATED TIME SLOT</span>
+                <span class="meta-val text-green"><i class="fa-regular fa-clock"></i> {{ booking.time_slot }}</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">RESERVED FOR</span>
+                <span class="meta-val text-white"><i class="fa-solid fa-user"></i> {{ booking.contact_name }}</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">CONTACT MOBILE</span>
+                <span class="meta-val text-white"><i class="fa-solid fa-phone"></i> {{ booking.contact_phone }}</span>
+              </div>
+            </div>
+
+            <!-- Settlement & Reception Check-in Details -->
+            <div class="ticket-payment-box">
+              <h4 class="payment-box-title"><i class="fa-solid fa-receipt"></i> Reservation &amp; Settlement Details</h4>
+              <div class="payment-box-grid">
+                <div>
+                  <span class="text-muted">Pitch Slot Fee:</span>
+                  <strong class="text-white">₹{{ "%.2f"|format(booking.amount) }}</strong>
+                </div>
+                <div>
+                  <span class="text-muted">Settlement Mode:</span>
+                  <strong class="text-white">{{ booking.payment_method }}</strong>
+                </div>
+                <div>
+                  <span class="text-muted">Desk Settlement Status:</span>
+                  <span class="text-green font-bold">{{ booking.payment_status }}</span>
+                </div>
+                <div>
+                  <span class="text-muted">Reservation Status:</span>
+                  <span class="badge-success-pill"><i class="fa-solid fa-circle-check"></i> {{ booking.status }}</span>
+                </div>
+              </div>
+              <div style="margin-top: 0.8rem; font-size: 0.85rem; color: var(--text-secondary);">
+                <i class="fa-solid fa-circle-info text-green"></i> Please show this voucher at turf reception 10 minutes prior to kickoff to verify attendance and complete check-in.
+              </div>
+            </div>
+          </div>
+
+          <!-- Stub Column / QR Mockup -->
+          <div class="ticket-stub-col">
+            <div class="ticket-code-header">
+              <span class="ticket-code-label">BOOKING ID</span>
+              <div class="ticket-code-val">{{ booking.booking_code }}</div>
+            </div>
+
+            <div class="ticket-qr-mock">
+              <i class="fa-solid fa-qrcode"></i>
+              <div class="qr-label">VALID ENTRY PASS</div>
+            </div>
+
+            <div class="ticket-stub-meta">
+              <div>Sport: <strong>Football</strong></div>
+              <div>Pitch: <strong>Full Synthetic Turf</strong></div>
+              <div>Duration: <strong>60 Minutes</strong></div>
+            </div>
+
+            {% if booking.status == 'Confirmed' %}
+              <div class="ticket-cancel-action">
+                <button type="button" class="btn btn-outline-danger btn-sm btn-block btn-cancel-booking" data-id="{{ booking.id }}" data-code="{{ booking.booking_code }}">
+                  <i class="fa-solid fa-xmark"></i> Cancel Booking
+                </button>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <div class="ticket-footer-disclaimer">
+        <i class="fa-solid fa-shield-halved text-green"></i>
+        <span>Official FanClub Pitch Admission Pass. Valid only for the allocated venue, date, and 1-hour time slot. Players must wear approved turf footwear.</span>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/booking.js') }}"></script>
+{% endblock %}
